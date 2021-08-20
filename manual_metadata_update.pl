@@ -40,7 +40,7 @@ sub do_help()
     print ("      -d       - database_name\n");
     print ("      -t       - table_name\n");
     print ("      -n       - dry_run(no updates)\n");
-    print ("      -b <0|1> - binlog enable/disable (default: disabled)");
+    print ("      -b <0|1> - binlog enable/disable (default: disabled)\n");
     exit(1);
 }
 
