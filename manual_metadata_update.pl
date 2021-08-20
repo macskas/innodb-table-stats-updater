@@ -198,7 +198,7 @@ sub main()
         $dry_run = 1;
         &do_info("dry_run = 1");
     }
-    if (defined($opts{b}) && $opt{b} =~ /^[0-9]+$/) {
+    if (defined($opts{b}) && $opts{b} =~ /^[0-9]+$/) {
         $binlog_enabled = int($opts{b});
         &do_info("binlog_enabled = $binlog_enabled");
     }
