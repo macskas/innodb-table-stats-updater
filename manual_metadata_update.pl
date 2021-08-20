@@ -37,9 +37,10 @@ sub do_info()
 sub do_help()
 {
     print ("$0\n");
-    print ("      -d    - database_name\n");
-    print ("      -t    - table_name\n");
-    print ("      -n    - dry_run(no updates)\n");
+    print ("      -d       - database_name\n");
+    print ("      -t       - table_name\n");
+    print ("      -n       - dry_run(no updates)\n");
+    print ("      -b <0|1> - binlog enable/disable (default: disabled)");
     exit(1);
 }
 
@@ -182,8 +183,9 @@ sub flush_table()
 sub main()
 {
     my %opts = ();
-    getopts("d:t:n", \%opts);
-
+    getopts("d:t:nb:", \%opts);
+    my $binlog_enabled = 0;
+    
     if (!defined($opts{d})) {
         &do_help();
     }
@@ -196,6 +198,10 @@ sub main()
         $dry_run = 1;
         &do_info("dry_run = 1");
     }
+    if (defined($opts{b}) && $opt{b} =~ /^[0-9]+$/) {
+        $binlog_enabled = int($opts{b});
+        &do_info("binlog_enabled = $binlog_enabled");
+    }
 
     $dbh = DBI->connect("DBI:mysql:database=mysql;host=localhost;mysql_read_default_group=mysql", "", "",
         {
@@ -207,6 +213,9 @@ sub main()
         }
     );
     $dbh->do("SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
+    if (!$binlog_enabled) {
+        $dbh->do("SET sql_log_bin=0");
+    }
     &table_stat_update($opts{d}, $opts{t});
     if (!$dry_run) {
         &flush_table($opts{d}, $opts{t});
